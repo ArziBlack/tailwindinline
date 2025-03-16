@@ -1,38 +1,160 @@
-# Why?
-I use this library to build a document that looks like the PDF I'd like with tailwind, use the frontend framework I'm using at the moment to insert data and/or graphs (that render to svg, I recommend apache echarts for this rendering functionality) and then output pure HTML from whatever format the framework uses (in  react this is accomplished with ReactDOMServer.renderToString(component)), convert it to inline styled html with this package, and then send the pure html file to a html-to-pdf api like api2pdf (which while unaffiliated seems relatively cheap).
+# Tailwindinline
 
-It enables you to at runtime convert from a html string with tailwind classes to a html string inline styled. I find this easier than supplying the PDF API with two files since I haven't found the most reliable pdf generation APIs.
+A utility library that converts Tailwind CSS classes in HTML to inline styles. This is particularly useful when you need to generate PDFs from HTML content or when you need to ensure styling consistency across different platforms that may not support external stylesheets.
 
-Questions/comments/improvements/suggestions? Contributions welcome.
+## Features
 
-## Params
-* config: Optional path to your tailwind.config.js that you'd like to use with this library. Useful if you have custom theme extensions, like colors or fonts. (relative path)
-* custom: Custom css (string)
-
+- Converts Tailwind CSS classes to inline styles
+- Supports custom Tailwind configuration
+- Handles arbitrary values (e.g., `bg-[#ff00ee]`, `text-[2px]`)
+- Preserves existing inline styles
+- Supports custom CSS
+- Handles default styles per HTML tag
 
 ## Installation
-```npm install tailwindinline```
+
+```bash
+npm install tailwindinline
+```
+
+## Usage
+
+### Basic Usage
 
 ```javascript
 import TailwindToInline from 'tailwindinline'
-const twi = new TailwindToInline({ config: './path/to/tailwind.config', custom: ".button: { background-color: 'red' }" })
 
-const htmlWithInlineStyles = twi.convert('<div class="pt-2 pb-[40px] border-2 border-[#0f0]"></div>')
-/*
-<div 
-	class="pt-2 pb-[40px] border-2 border-[#0f0]" 
-	style="padding-top: 0.5rem; padding-bottom: 40px; border-width: 2px; border-color: #0f0; box-sizing: border-box;"
-></div>
+// Initialize converter
+const twi = new TailwindToInline()
+
+// Convert HTML string with Tailwind classes
+const html = '<div class="pt-2 pb-4 bg-blue-500">Hello World</div>'
+const htmlWithInlineStyles = await twi.convert(html)
+
+// Result:
+// <div class="pt-2 pb-4 bg-blue-500" 
+//      style="padding-top: 0.5rem; padding-bottom: 1rem; background-color: #3b82f6; box-sizing: border-box;">
+//   Hello World
+// </div>
 ```
 
-# Tailwindinline
-(Tries to) append a style attribute with computed tailwind classes to the end of each html tag that contained them.
+### With Custom Tailwind Configuration
 
-### Planned additions
-- [x] remove unneeded styles from classList.json (hover, focus)
-- [x] fix syntax of some classnames in classList.json (ex: placeholder:moz-[...])
-- [x] custom tailwind classes
-- [x] add all tailwind auto-added classes (those that makes sense for this usage)
-- [x] import and use a custom tailwindconfig
-- [x] implement more consistent regex file
-- [ ] rewrite this readme.md
+```javascript
+import TailwindToInline from 'tailwindinline'
+
+// Initialize with custom Tailwind config
+const twi = new TailwindToInline({
+  config: './path/to/tailwind.config.js'
+})
+
+// Use converter
+const html = '<div class="custom-color custom-spacing">Hello World</div>'
+const result = await twi.convert(html)
+```
+
+### With Custom CSS
+
+```javascript
+import TailwindToInline from 'tailwindinline'
+
+// Initialize with custom CSS
+const twi = new TailwindToInline({
+  custom: `
+    .custom-button {
+      background-color: red;
+      padding: 10px;
+    }
+  `
+})
+
+// Use converter
+const html = '<button class="custom-button">Click me</button>'
+const result = await twi.convert(html)
+```
+
+## API Reference
+
+### `TailwindToInline`
+
+#### Constructor Options
+
+```typescript
+interface TailwindOptions {
+  config?: string;    // Path to custom tailwind.config.js (relative path)
+  custom?: string;    // Custom CSS string
+}
+```
+
+#### Methods
+
+##### `convert(html: string): Promise<string | undefined>`
+
+Converts HTML string with Tailwind classes to HTML with inline styles.
+
+- **Parameters:**
+  - `html`: HTML string containing Tailwind classes
+- **Returns:** Promise resolving to the converted HTML string with inline styles
+
+## Common Use Cases
+
+### PDF Generation
+
+```javascript
+import TailwindToInline from 'tailwindinline'
+import ReactDOMServer from 'react-dom/server'
+
+// Initialize converter
+const twi = new TailwindToInline()
+
+// Your React component
+const MyComponent = () => (
+  <div class="p-4 bg-white">
+    <h1 class="text-2xl font-bold">PDF Title</h1>
+    <p class="mt-2 text-gray-600">Content goes here</p>
+  </div>
+)
+
+// Convert React component to HTML string
+const htmlString = ReactDOMServer.renderToString(<MyComponent />)
+
+// Convert Tailwind classes to inline styles
+const inlineStyledHtml = await twi.convert(htmlString)
+
+// Send to PDF generation service
+// Example with api2pdf:
+// await api2pdf.chromeHtmlToPdf(inlineStyledHtml)
+```
+
+### Email Template Generation
+
+```javascript
+import TailwindToInline from 'tailwindinline'
+
+const twi = new TailwindToInline()
+
+const emailTemplate = `
+  <div class="max-w-lg mx-auto p-6 bg-white">
+    <h1 class="text-xl font-bold text-gray-800">Welcome!</h1>
+    <p class="mt-4 text-gray-600">Thank you for signing up.</p>
+  </div>
+`
+
+const emailHtml = await twi.convert(emailTemplate)
+// Ready to be sent via email service
+```
+
+## Notes
+
+- The library processes HTML strings, so it works with any frontend framework that can render to HTML strings
+- Custom Tailwind configurations must be in ES6 module format
+- The library automatically handles box-sizing and other default styles
+- Existing inline styles are preserved and merged with converted Tailwind styles
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT

@@ -1,13 +1,13 @@
-export const TAILWIND_DEFAULTS = 
+export const TAILWIND_DEFAULTS: string = 
 'box-sizing: border-box;' +
 'border-width: 0; border-style: solid;'
 
-export const CLASSES_IN_TAG = /(?:(?:class|className)=(?<CLASS>(?:["'].+?["']))).*?/g;
-export const MATCH_TAG = new RegExp(String.raw`<(?!\/).+?>`, 'g');
-export const TAG_NAME = /<(\w+)/g
-export const CLASS_ATTRIBUTE = /\w[a-zA-Z0-9-]+(?<VALUE>\[.+?\])/g;
-export const CUSTOM_VALUE = /\[.+?\]/g;
-export const DEFAULTS_PER_TAG = new Map([
+export const CLASSES_IN_TAG: RegExp = /(?:(?:class|className)=(?<CLASS>(?:["'].+?["']))).*?/g;
+export const MATCH_TAG: RegExp = new RegExp(String.raw`<(?!\/).+?>`, 'g');
+export const TAG_NAME: RegExp = /<(\w+)/g;
+export const CLASS_ATTRIBUTE: RegExp = /\w[a-zA-Z0-9-]+(?<VALUE>\[.+?\])/g;
+export const CUSTOM_VALUE: RegExp = /\[.+?\]/g;
+export const DEFAULTS_PER_TAG: Map<string, string> = new Map([
     ['blockquote', 'margin: 0;'],
     ['dl', 'margin: 0;'],
     ['dd', 'margin: 0;'],
@@ -31,4 +31,4 @@ export const DEFAULTS_PER_TAG = new Map([
     ['iframe', 'display: block; vertical-align: middle;'],
     ['embed', 'display: block; vertical-align: middle;'],
     ['object', 'display: block; vertical-align: middle;'],
-])
+]); 

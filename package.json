@@ -1,11 +1,19 @@
 {
   "name": "tailwindinline",
-  "version": "0.3.7",
+  "version": "0.3.7-beta.8",
   "type": "module",
-  "description": "tailwind html to inline style html",
-  "main": "index.js",
+  "description": "This package allows developers to convert HTML with Tailwind CSS classes into equivalent inline styles.",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "rimraf dist && tsc && copyfiles -f src/input.css src/tailwind.config.js dist/",
+    "build:watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch & node --watch dist/index.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -27,7 +35,12 @@
   "devDependencies": {
     "@babel/plugin-syntax-import-assertions": "^7.20.0",
     "@babel/preset-env": "^7.20.2",
-    "jest": "^29.7.0"
+    "@types/jest": "^29.5.12",
+    "copyfiles": "^2.4.1",
+    "jest": "^29.7.0",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3"
   },
   "babel": {
     "plugins": [
@@ -40,5 +53,13 @@
   "dependencies": {
     "postcss": "^8.4.35",
     "tailwind": "^4.0.0"
-  }
+  },
+  "files": [
+    "types",
+    "dist",
+    "README.md",
+    "LICENSE",
+    "dist/input.css",
+    "dist/tailwind.config.js"
+  ]
 }
